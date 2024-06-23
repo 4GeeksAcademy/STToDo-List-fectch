@@ -30,6 +30,37 @@ export const Todolist = () => {
       const handleMouseLeave = () => {
         setShowButton(null);
       };
+
+      const getUserList = () =>{
+        fetch("https://playground.4geeks.com/todo/users/steven")
+            .then((resp) => {
+            if(resp.status === 404) {createUser();}
+
+                return resp.json
+            })
+            
+            .then((data) => {
+                setTasklist(data.todos)
+            })
+      }
+
+      const createTask = () => {
+        fetch('https://playground.4geeks.com/todo/todos/steven',{
+            method:"POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: {
+                label:inputValue
+            },
+        })
+
+
+
+      }
+
+
+
     return (
         <div className="container">
             <div className="mb-2">
