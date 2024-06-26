@@ -1,13 +1,54 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faCircleXmark} from '@fortawesome/free-solid-svg-icons';
 
 export const Todolist = () => {
-    const [taskList, setTasklist] = useState(['Make the bed','Eat','Walk the dog', 'Coding']);
+    const [taskList, setTasklist] = useState([]);
     const [inputValue, setInputValue] = useState(''); 
-    const [showButton, setShowButton] = useState(null);
 
+    useEffect(() => {
+      (async () => {
+        try {
+          const response = await fetch("https://playground.4geeks.com/todo/users/steven");
+          if (response.status == 404) {
+            await createUser();
+          }
+          await getTaskslist();
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+      },[]);
 
+      async function createUser(){
+        try {
+          const response = await fetch("https://playground.4geeks.com/todo/users/steven", {
+          method: "POST",
+          headers: {
+          accept: "application/json",
+          "Content-type": "application/json",
+        },
+          body: JSON.stringify({
+          name: "steven",
+        }),
+        });
+        if (response.status !== 201) {
+          console.error("Error:", response.status, response.statusText);
+        }
+        } catch (error) {
+        console.error("Error:", error);
+        }
+      }
+
+      const getTaskslist = async () => {
+    
+        const response = await fetch("https://playground.4geeks.com/todo/users/steven");
+        const data = await response.json();
+        setTasklist(data.todos || []); 
+      };
+      
+
+  
     const inputChange = (e) => {
         e.preventDefault();
         setInputValue(e.target.value);
@@ -23,44 +64,6 @@ export const Todolist = () => {
         setTasklist(taskList.filter((_, i) => i !== index));
       };
 
-      const handleMouseEnter = (index) => {
-        setShowButton(index);
-      };
-    
-      const handleMouseLeave = () => {
-        setShowButton(null);
-      };
-
-      const getUserList = () =>{
-        fetch("https://playground.4geeks.com/todo/users/steven")
-            .then((resp) => {
-            if(resp.status === 404) {createUser();}
-
-                return resp.json
-            })
-            
-            .then((data) => {
-                setTasklist(data.todos)
-            })
-      }
-
-      const createTask = () => {
-        fetch('https://playground.4geeks.com/todo/todos/steven',{
-            method:"POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: {
-                label:inputValue
-            },
-        })
-
-
-
-      }
-
-
-
     return (
         <div className="container">
             <div className="mb-2">
@@ -71,10 +74,9 @@ export const Todolist = () => {
             {taskList.length > 0 ? (
                 <ul className="d-flex flex-column bg-dark ps-0" > 
                     {taskList.map((item, index) => (
-					          <li onMouseEnter={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave}
-                    className="fs-2 ms-3 p-2 text-white rounded border border-danger d-flex justify-content-center" key={index}>{item}    
-                    <div className="d-flex ms-auto"> {showButton === index && (<button type="button" onClick={() => deleteTask(index)} className="btn btn-dark">
-                      <FontAwesomeIcon icon={faCircleXmark} /></button>)}</div></li>
+					          <li className="fs-2 ms-3 p-2 text-white rounded border border-danger d-flex justify-content-center" key={index}>{item}    
+                    <div className="d-flex ms-auto"><button type="button" onClick={() => deleteTask(index)} className="btn btn-dark">
+                      <FontAwesomeIcon icon={faCircleXmark} /></button></div></li>
                     ))}
                     <li className="fs-5 d-flex ms-3 me-auto bg-dark text-white">{taskList.length} items left</li>
                 </ul>

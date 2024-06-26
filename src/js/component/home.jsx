@@ -7,6 +7,7 @@ import { Todolist } from "./Todolist";
 const Home = () => {
 	return (
 		<div className="text-center">
+			<h1 className="text-white">TODOS</h1>
 			<Todolist />
 			
 		</div>
