@@ -13,12 +13,13 @@ export const Todolist = () => {
           if (response.status == 404) {
             await createUser();
           }
+          
           await getTaskslist();
         } catch (error) {
           console.error("Error:", error);
         }
-      });
-      },[]);
+      })();
+      }, []);
 
       async function createUser(){
         try {
@@ -45,10 +46,9 @@ export const Todolist = () => {
         const response = await fetch("https://playground.4geeks.com/todo/users/steven");
         const data = await response.json();
         setTasklist(data.todos || []); 
+        console.log(data.todos)
       };
-      
-
-  
+    
     const inputChange = (e) => {
         e.preventDefault();
         setInputValue(e.target.value);
@@ -74,7 +74,7 @@ export const Todolist = () => {
             {taskList.length > 0 ? (
                 <ul className="d-flex flex-column bg-dark ps-0" > 
                     {taskList.map((item, index) => (
-					          <li className="fs-2 ms-3 p-2 text-white rounded border border-danger d-flex justify-content-center" key={index}>{item}    
+					          <li className="fs-2 ms-3 p-2 text-white rounded border border-danger d-flex justify-content-center" key={item.id}>{item.label}    
                     <div className="d-flex ms-auto"><button type="button" onClick={() => deleteTask(index)} className="btn btn-dark">
                       <FontAwesomeIcon icon={faCircleXmark} /></button></div></li>
                     ))}
