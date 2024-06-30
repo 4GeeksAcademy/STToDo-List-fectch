@@ -6,18 +6,8 @@ export const Todolist = () => {
     const [taskList, setTasklist] = useState([]);
     const [inputValue, setInputValue] = useState(''); 
 
-    useEffect(() => {
-      (async () => {
-        try {
-          const response = await fetch("https://playground.4geeks.com/todo/users/steven");
-          if (response.status == 404) {
-            await createUser();
-          }
+    useEffect(async () => {
           await getTaskslist();
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      })();
       }, []);
 
       async function createUser(){
@@ -42,9 +32,18 @@ export const Todolist = () => {
       }
 
       const getTaskslist = async () => {
+        try{
         const response = await fetch("https://playground.4geeks.com/todo/users/steven");
         const data = await response.json();
         setTasklist(data.todos || []); 
+        if (response.status == 404) {
+          await createUser();
+        }
+      
+        }
+        catch (error) {
+          console.error("Error:", error);
+        }
       };
     
     const inputChange = (e) => {
